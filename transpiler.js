@@ -1,6 +1,7 @@
 const variables = {};
 
 function binaryOperations(lhs, op, rhs) {
+  console.log(lhs, op, rhs)
   switch (op) {
     case 'Add':
       return lhs + rhs;
@@ -31,16 +32,23 @@ function binaryOperations(lhs, op, rhs) {
   }
 }
 
-export function transpiler(expression) {
-  if (!expression) {
-    return
-  }
+export function transpiler(expression) {  
   switch (expression.kind) {
     // TIPOS
     case 'Str':
       return expression.value;
     case 'Int':
       return expression.value;
+    case 'Bool':
+      return expression.value;
+    case 'Function':
+      return expression;
+    case 'Tuple':
+      return [transpiler(expression.first), transpiler(expression.second)];
+    case 'First':
+      return transpiler(expression.value)[0];
+    case 'Second':
+      return transpiler(expression.value)[1];
 
     case "Print":
       return console.log(transpiler(expression.value));
@@ -49,8 +57,6 @@ export function transpiler(expression) {
       return transpiler(expression.next);
     case 'Var':
       return variables[expression.text];
-    case 'Function':
-      return expression;
     case 'Call':
       return execFunc(variables[expression.callee.text], expression.arguments);
     case 'If':
@@ -61,7 +67,7 @@ export function transpiler(expression) {
   }
 }
 
-function execFunc(func, args) {  
+function execFunc(func, args) {
   for (let i = 0; i < func.parameters.length; i++) {
     variables[func.parameters[i].text] = transpiler(args[i]);
   }
