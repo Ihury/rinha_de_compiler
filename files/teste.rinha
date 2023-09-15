@@ -1,0 +1,9 @@
+let fat = fn (a) => {
+  if (a < 2) {
+    a
+  } else {
+    a + fat(a-1)
+  }
+};
+
+print(fat(5))
